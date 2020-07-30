@@ -1,0 +1,52 @@
+- name: Configure 99_frr_defaults.conf
+  action: template src=templates/99frr_defaults.conf.j2 dest=/etc/sysctl.d/99frr_defaults.conf backup=yes
+  notify:
+   - reload 99frr_defaults
+  tags: frr-docker   
+  
+- name: "Copy dockerfrr.sh shortcut script"
+  copy:
+    src: files/dockerfrr.sh
+    dest: /usr/sbin/dockerfrr.sh
+    mode: "+x"
+
+- name: "Configure /etc/frr"
+  file:
+   path: "/etc/frr/"
+   state: directory
+   
+- name: "Copy daemons file"
+  copy:
+    src: daemons
+    dest: "/etc/frr/daemons"
+
+- name: "Copy bgpd.conf file"
+  copy:
+    src: bgpd.conf
+    dest: "/etc/frr/bgpd.conf"
+    
+- name: "Copy bfdd.conf file"
+  copy:
+    src: bfdd.conf 
+    dest: "/etc/frr/bfdd.conf"
+    
+- name: "Configure frr.conf"
+  action: template src=templates/frr.conf.j2 dest=/etc/frr/frr.conf backup=yes
+  notify:
+   - restart frr-docker
+  when: ignore_frrconf is not defined
+  tags: frr-docker,frrconf
+    
+- name: "Configure frr-docker.service"
+  action: template src=templates/frr-docker.service.j2 dest=/etc/systemd/system/frr-docker.service backup=yes
+  notify:
+   - restart frr-docker
+  tags: frr-docker   
+    
+- name: "Reload systemctl then enable & start frr-docker service"
+  systemd:
+    state: started
+    enabled: True
+    daemon_reload: yes
+    name:  frr-docker.service
+  tags: frr-docker    

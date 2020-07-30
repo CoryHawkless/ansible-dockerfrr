@@ -1,0 +1,1 @@
+docker exec -i -t frr /usr/bin/vtysh

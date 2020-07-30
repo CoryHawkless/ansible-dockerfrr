@@ -1,0 +1,6 @@
+---
+- name: restart frr-docker
+  action: service name=frr-docker enabled=yes state=restarted
+  
+- name: reload 99frr_defaults
+  action: shell /sbin/sysctl -p /etc/sysctl.d/99frr_defaults.conf

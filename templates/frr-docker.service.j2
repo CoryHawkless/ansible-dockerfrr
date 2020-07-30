@@ -1,0 +1,20 @@
+
+[Unit]
+Description=Cumulus Frr Container
+After=docker.service network-online.target
+Requires=docker.service
+ 
+ 
+[Service]
+Restart=always
+TimeoutStartSec=0
+#One ExecStart/ExecStop line to prevent hitting bugs in certain systemd versions
+ExecStart=/bin/sh -c 'docker rm -f frr; \
+          docker pull registry.acs2.lan:5000/frrouting/frr; \
+          docker run -t --net=host --privileged --name frr -v /etc/frr/frr.conf:/etc/frr/frr.conf -v /etc/frr/daemons:/etc/frr/daemons -v /etc/frr/bgpd.conf:/etc/frr/bgpd.conf -v /etc/frr/bfdd.conf:/etc/frr/bfdd.conf  -v /var/log/frr/frr.log:/var/log/frr/frr.log registry.acs2.lan:5000/frrouting/frr'
+ExecStop=-/bin/sh -c '/usr/bin/docker stop frr; \
+          /usr/bin/docker rm -f frr'
+ 
+ 
+[Install]
+WantedBy=multi-user.target
