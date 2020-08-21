@@ -16,7 +16,7 @@ interface {{ item['name'] }}
 
 
 router bgp {{host_ASN}}
- bgp router-id {{host_loopback_IP}}
+ bgp router-id {% if host_loopback_IP is defined %}{{host_loopback_IP}}{% else %}{{hostvars[inventory_hostname]['ansible_default_ipv4']['address']}}{% endif  %}
  bgp bestpath as-path multipath-relax
  bgp bestpath compare-routerid
 {% if autobgp_interfaces is defined and autobgp_interfaces != [] %}
@@ -28,7 +28,7 @@ router bgp {{host_ASN}}
 {% if addressed_interfaces is defined and addressed_interfaces != [] %}
 {%   for item in addressed_interfaces %}
 {%     if item['bgpPeerIP'] is defined %}
- neighbor {{ item['bgpPeerIP'] }} remote-as {{ item['bgpPeerASN'] }} 
+ neighbor {{ item['bgpPeerIP'] }} remote-as {{ item['bgpPeerASN'] }}
 {%     endif  %}
 {%   endfor %}
 {% endif  %}
@@ -37,43 +37,47 @@ router bgp {{host_ASN}}
  neighbor {{ item['name'] }} interface peer-group fabric
 {%   endfor %}
 {%   endif  %}
-{% if frr_other_peers is defined and frr_other_peers != [] %} 
+{% if frr_other_peers is defined and frr_other_peers != [] %}
 {%   for item in frr_other_peers %}
  neighbor {{ item['ip'] }} remote-as {{ item['remote_ASN'] }}
 {%   endfor %}
 {%  endif   %}
  !
  address-family ipv4 unicast
+{% if host_loopback_IP is defined %}
   network {{host_loopback_IP}}/32
+{% endif  %}
 {% if autobgp_interfaces is defined and autobgp_interfaces != [] %}
   neighbor fabric activate
   neighbor fabric prefix-list AS{{host_ASN}}-OUT out
-{%  endif   %}  
-{% if frr_other_peers is defined and frr_other_peers != [] %} 
+{%  endif   %}
+{% if frr_other_peers is defined and frr_other_peers != [] %}
 {%   for item in frr_other_peers %}
  neighbor {{ item['ip'] }} remote-as {{ item['remote_ASN'] }}  prefix-list AS{{host_ASN}}-OUT out
 {%   endfor %}
-{%  endif   %} 
+{%  endif   %}
 {% if addressed_interfaces is defined and addressed_interfaces != [] %}
 {%   for item in addressed_interfaces %}
 {%     if item['bgpPeerIP'] is defined %}
  neighbor {{ item['bgpPeerIP'] }} prefix-list AS{{host_ASN}}-OUT out
 {%     endif  %}
 {%   endfor %}
-{% endif  %} 
+{% endif  %}
   exit-address-family
  !
  address-family ipv6 unicast
+{% if host_loopback_IP_v6 is defined %}
   network {{host_loopback_IP_v6}}/128
-{% if frr_other_peers is defined and frr_other_peers != [] %} 
+{% endif  %}
+{% if frr_other_peers is defined and frr_other_peers != [] %}
 {%   for item in frr_other_peers %}
  neighbor {{ item['ip'] }} prefix-list AS{{host_ASN}}-OUT out
 {%   endfor %}
-{%  endif   %}    
+{%  endif   %}
 {% if autobgp_interfaces is defined and autobgp_interfaces != [] %}
   neighbor fabric activate
   neighbor fabric prefix-list AS{{host_ASN}}-OUT out
-{%  endif   %}  
+{%  endif   %}
 {% if addressed_interfaces is defined and addressed_interfaces != [] %}
 {%   for item in addressed_interfaces %}
 {%     if item['bgpPeerIP'] is defined %}
