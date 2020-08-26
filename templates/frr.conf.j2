@@ -48,7 +48,9 @@ router bgp {{host_ASN}}
   network {{host_loopback_IP}}/32
 {% endif  %}
 {% if networks_to_announce_ipv4 is defined and networks_to_announce_ipv4 != [] %}
-  network {{networks_to_announce_ipv4}}
+{%  for item in networks_to_announce_ipv4 %}
+  network {{item}}
+{%  endfor %}
 {% endif %}
 {% if autobgp_interfaces is defined and autobgp_interfaces != [] %}
   neighbor fabric activate
@@ -56,7 +58,7 @@ router bgp {{host_ASN}}
 {%  endif   %}
 {% if frr_other_peers is defined and frr_other_peers != [] %}
 {%   for item in frr_other_peers %}
- neighbor {{ item['ip'] }} remote-as {{ item['remote_ASN'] }}  prefix-list AS{{host_ASN}}-OUT out
+  neighbor {{ item['ip'] }} remote-as {{ item['remote_ASN'] }}  prefix-list AS{{host_ASN}}-OUT out
 {%   endfor %}
 {%  endif   %}
 {% if addressed_interfaces is defined and addressed_interfaces != [] %}
