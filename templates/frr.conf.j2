@@ -102,7 +102,5 @@ router bgp {{host_ASN}}
  exit-address-family
 !
 {% if host_loopback_IP is defined %}ip prefix-list AS{{host_ASN}}-OUT seq 5 permit {{host_loopback_IP}}/32{% endif  %}
-!
+
 {% if host_loopback_IP_v6 is defined %}ipv6 prefix-list AS{{host_ASN}}-OUT seq 5 permit {{host_loopback_IP_v6}}/128{% endif  %}
-line vty
-!
