@@ -47,6 +47,9 @@ router bgp {{host_ASN}}
 {% if host_loopback_IP is defined %}
   network {{host_loopback_IP}}/32
 {% endif  %}
+{% if bgp_redistribute_connected is defined and bgp_redistribute_connected == True %}
+ redistribute connected
+{% endif  %}
 {% if autobgp_interfaces is defined and autobgp_interfaces != [] %}
   neighbor fabric activate
   neighbor fabric prefix-list AS{{host_ASN}}-OUT out
