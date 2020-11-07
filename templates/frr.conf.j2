@@ -47,6 +47,9 @@ router bgp {{host_ASN}}
 {% if host_loopback_IP is defined %}
   network {{host_loopback_IP}}/32
 {% endif  %}
+{% if bgp_redistribute_connected is defined and bgp_redistribute_connected == True %}
+ redistribute connected
+{% endif  %}
 {% if networks_to_announce_ipv4 is defined and networks_to_announce_ipv4 != [] %}
 {%  for item in networks_to_announce_ipv4 %}
   network {{item}}
