@@ -1,4 +1,4 @@
-#Managed by asnible, do not configure manually
+#Managed by ansible, do not configure manually
 #
 # Sample configurations for these daemons can be found in
 # /usr/share/doc/frr/examples/.
