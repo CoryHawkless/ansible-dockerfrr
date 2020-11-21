@@ -102,9 +102,10 @@ router bgp {{host_ASN}}
  exit-address-family
 !
 {% if host_loopback_IP is defined %}ip prefix-list AS{{host_ASN}}-OUT seq 5 permit {{host_loopback_IP}}/32{% endif  %}
+
 {% if networks_to_announce_ipv4 is defined and networks_to_announce_ipv4 != [] %}
 {%  for item in networks_to_announce_ipv4 %}
-  ip prefix-list AS{{host_ASN}}-OUT seq {{loop.index+5}} permit {{item}}/32 
+  ip prefix-list AS{{host_ASN}}-OUT seq {{loop.index+5}} permit {{item}}/32
 {%  endfor %}
 {% endif %}
 
