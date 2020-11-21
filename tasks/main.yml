@@ -57,4 +57,4 @@
     enabled: True
     daemon_reload: yes
     name:  frr-docker.service
-  tags: frr-docker    
+  tags: frr-docker
